@@ -31,7 +31,7 @@ export function NotificationsWorker() {
    * Handle incoming messages
    * @param message Message
    */
-  function onMessage(message: Message) {
+  async function onMessage(message: Message) {
     const us = client().user!;
 
     // Ignore if we are currently looking at the channel
@@ -90,6 +90,26 @@ export function NotificationsWorker() {
     let body, icon;
     if (message.content) {
       body = message.contentPlain;
+      if (body) {
+        const uniqueEmojiIds = Array.from(
+          new Set(Array.from(body.matchAll(/:([0-9A-Z]{26}):/gi)).map((m) => m[1]))
+        );
+        
+        for (const id of uniqueEmojiIds) {
+          if (!client().emojis.get(id)) {
+            try {
+              await client().emojis.fetch(id);
+            } catch (e) {
+              // ignore fetch errors
+            }
+          }
+        }
+        
+        body = body.replace(/:([0-9A-Z]{26}):/gi, (match, id) => {
+          const emoji = client().emojis.get(id);
+          return emoji ? `:${emoji.name}:` : ":emoji:";
+        });
+      }
       icon = message.avatarURL;
     } else if (message.systemMessage) {
       switch (message.systemMessage.type) {
