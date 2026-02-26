@@ -139,6 +139,7 @@ const Blocked = styled(Row, {
     fontSize: "14px",
     userSelect: "none",
     padding: "var(--gap-md)",
+    opacity: 0.6,
   },
 });
 
