@@ -104,6 +104,5 @@ const Base = styled("div", {
     borderRadius: "var(--borderRadius-md)",
 
     color: "var(--md-sys-color-on-secondary-container)",
-    background: "var(--md-sys-color-secondary-container)",
   },
 });

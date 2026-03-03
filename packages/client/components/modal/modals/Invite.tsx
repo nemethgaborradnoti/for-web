@@ -64,11 +64,6 @@ export function InviteModal(props: DialogProps & Modals & { type: "invite" }) {
         },
       ]}
       isDisabled={join.isPending}
-      scrimBackground={
-        props.invite instanceof ServerPublicInvite
-          ? props.invite.serverBanner?.originalUrl
-          : undefined
-      }
     >
       <Switch>
         <Match when={props.invite.type === "Server"}>

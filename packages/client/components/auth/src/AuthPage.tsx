@@ -10,7 +10,6 @@ import { IconButton, iconSize } from "@revolt/ui";
 
 import MdDarkMode from "@material-design-icons/svg/filled/dark_mode.svg?component-solid";
 
-import background from "./background.jpg";
 import { FlowBase } from "./flows/Flow";
 import bluesky from "./flows/bluesky.svg";
 
@@ -127,10 +126,7 @@ export function AuthPage(props: { children: JSX.Element }) {
       }}
     >
       <Titlebar />
-      <Base
-        style={{ "--url": `url('${background}')` }}
-        css={{ scrollbar: "hidden" }}
-      >
+      <Base css={{ scrollbar: "hidden" }}>
         <Nav>
           <div />
           <IconButton
