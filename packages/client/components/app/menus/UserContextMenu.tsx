@@ -10,6 +10,7 @@ import { useSmartParams } from "@revolt/routing";
 import { useState } from "@revolt/state";
 import { Slider, Text } from "@revolt/ui";
 
+import MdAccountCircle from "@material-design-icons/svg/outlined/account_circle.svg?component-solid";
 import MdAddCircleOutline from "@material-design-icons/svg/outlined/add_circle_outline.svg?component-solid";
 import MdAdminPanelSettings from "@material-design-icons/svg/outlined/admin_panel_settings.svg?component-solid";
 import MdAlternateEmail from "@material-design-icons/svg/outlined/alternate_email.svg?component-solid";
@@ -51,7 +52,7 @@ export function UserContextMenu(props: {
   const state = useState();
   const client = useClient();
   const navigate = useNavigate();
-  const { openModal } = useModals();
+  const { openModal, modals } = useModals();
 
   // server context
   const params = useSmartParams();
@@ -70,6 +71,16 @@ export function UserContextMenu(props: {
     openModal({
       type: "delete_channel",
       channel: props.channel!,
+    });
+  }
+
+  /**
+   * Open user profile
+   */
+  function openProfile() {
+    openModal({
+      type: "user_profile",
+      user: props.user,
     });
   }
 
@@ -236,23 +247,45 @@ export function UserContextMenu(props: {
           <Trans>Close chat</Trans>
         </ContextMenuButton>
       </Show>
-      <Show when={props.channel?.type === "TextChannel"}>
-        <ContextMenuButton icon={MdAlternateEmail} onClick={mention}>
-          <Trans>Mention</Trans>
+
+      <Show
+        when={
+          !modals.find(
+            (m) =>
+              m.props.type === "user_profile" &&
+              m.props.user.id === props.user.id &&
+              m.show,
+          )
+        }
+      >
+        <ContextMenuButton icon={MdAccountCircle} onClick={openProfile}>
+          <Trans>Profile</Trans>
         </ContextMenuButton>
       </Show>
+
       <Show when={props.user.relationship === "Friend"}>
         <ContextMenuButton icon={MdChat} onClick={openDm}>
           <Trans>Message</Trans>
         </ContextMenuButton>
       </Show>
 
+      <Show when={props.channel?.type === "TextChannel"}>
+        <ContextMenuButton icon={MdAlternateEmail} onClick={mention}>
+          <Trans>Mention</Trans>
+        </ContextMenuButton>
+      </Show>
+
       <Show
         when={
+          props.channel?.type === "DirectMessage" ||
+          !modals.find(
+            (m) =>
+              m.props.type === "user_profile" &&
+              m.props.user.id === props.user.id &&
+              m.show,
+          ) ||
           props.user.relationship === "Friend" ||
-          (props.channel &&
-            (props.channel.type === "DirectMessage" ||
-              props.channel.type === "TextChannel"))
+          props.channel?.type === "TextChannel"
         }
       >
         <ContextMenuDivider />
@@ -349,7 +382,6 @@ export function UserContextMenu(props: {
         <ContextMenuButton icon={MdReport} onClick={reportUser} destructive>
           <Trans>Report user</Trans>
         </ContextMenuButton>
-        {/* TODO: #286 show profile / message */}
         <Show when={props.user.relationship === "None" && !props.user.bot}>
           <ContextMenuButton icon={MdPersonAddAlt} onClick={addFriend}>
             <Trans>Add friend</Trans>
